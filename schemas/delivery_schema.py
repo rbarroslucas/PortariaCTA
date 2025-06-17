@@ -6,4 +6,3 @@ class DeliverySchema(BaseModel):
     establishment : str
     address : str
     user : str
-    dweller_id : int
