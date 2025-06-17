@@ -6,4 +6,3 @@ class UberSchema(BaseModel):
     license_plate :str
     address : str
     user : str
-    dweller_id : int

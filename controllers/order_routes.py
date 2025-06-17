@@ -1,31 +1,55 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
+from fastapi_utils.cbv import cbv
+from fastapi_utils.inferring_router import InferringRouter
+
 from config.dependencies import verify_token, get_session
 from models import Dweller, Uber, DeliveryGuy
 from schemas import UberSchema, DeliverySchema
 
-order_router = APIRouter(prefix="/order", tags=["order"], dependencies=[Depends(verify_token)])
+router = InferringRouter(prefix="/order", tags=["order"], dependencies=[Depends(verify_token)])
 
-@order_router.post("/request-uber-access")
-async def request_uber_acces(uber_schema: UberSchema, dweller: Dweller = Depends(verify_token), session: Session = Depends(get_session)):
-    if not dweller.id == uber_schema.dweller_id:
-        raise HTTPException(status_code=401, detail="Unauthorized")
-    new_uber = Uber(uber_schema.name, uber_schema.license_plate, uber_schema.address, uber_schema.user, uber_schema.dweller_id)
-    session.add(new_uber)
-    session.commit()
-    return {
-        "Message" : f"Access granted for Uber driver {new_uber.name}.",
-        "Uber" : new_uber
-    }
+@cbv(router)
+class OrderView:
+    session: Session = Depends(get_session)
+    dweller: Dweller = Depends(verify_token)
 
-@order_router.post("/request-delivery-access")
-async def request_delivery_access(delivery_schema: DeliverySchema, dweller: Dweller = Depends(verify_token), session: Session = Depends(get_session)):
-    if not dweller.id == delivery_schema.dweller_id:
-        raise HTTPException(status_code=401, detail="Unauthorized")
-    new_delivery = DeliveryGuy(delivery_schema.name, delivery_schema.establishment, delivery_schema.address, delivery_schema.user, delivery_schema.dweller_id)
-    session.add(new_delivery)
-    session.commit()
-    return {
-        "Message" : f"Access granted for Delivery Guy {new_delivery.name}.",
-        "Delivery" : new_delivery
-    }
+    @router.post("/request-uber-access")
+    async def request_uber_access(self, uber_schema: UberSchema):
+        new_uber = Uber(
+            name=uber_schema.name,
+            license_plate=uber_schema.license_plate,
+            address=uber_schema.address,
+            user=uber_schema.user,
+            dweller_id=self.dweller.id
+        )
+        self.session.add(new_uber)
+        self.session.commit()
+        return {
+            "message": f"Acesso liberado para Uber {new_uber.name}",
+            "uber": {
+                "name": new_uber.name,
+                "license_plate": new_uber.license_plate,
+                "address": new_uber.address
+            }
+        }
+
+    @router.post("/request-delivery-access")
+    async def request_delivery_access(self, delivery_schema: DeliverySchema):
+        new_delivery = DeliveryGuy(
+            name=delivery_schema.name,
+            establishment=delivery_schema.establishment,
+            address=delivery_schema.address,
+            user=delivery_schema.user,
+            dweller_id=self.dweller.id
+        )
+        self.session.add(new_delivery)
+        self.session.commit()
+        return {
+            "message": f"Acesso liberado para {new_delivery.name}",
+            "delivery": {
+                "name": new_delivery.name,
+                "establishment": new_delivery.establishment,
+                "address": new_delivery.address
+            }
+        }
