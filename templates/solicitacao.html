@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Solicitação de Entrada</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <script>
+        function atualizarFormulario() {
+            const tipo = document.getElementById("tipo").value;
+            document.getElementById("campos-uber").style.display = "none";
+            document.getElementById("campos-entregador").style.display = "none";
+
+            if (tipo === "uber") {
+                document.getElementById("campos-uber").style.display = "block";
+            } else if (tipo === "entregador") {
+                document.getElementById("campos-entregador").style.display = "block";
+            }
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1>Solicitação de Entrada</h1>
+
+        <form action="/solicitar" method="post">
+            <label for="tipo">Tipo de Solicitação:</label><br>
+            <select id="tipo" name="tipo" onchange="atualizarFormulario()" required>
+                <option value="">-- Selecione --</option>
+                <option value="uber">Uber / Motorista de Aplicativo</option>
+                <option value="entregador">Entregador (iFood, Mercado Livre, etc.)</option>
+            </select><br><br>
+
+            <div id="campos-uber" style="display:none;">
+                <label for="nome_uber">Nome do Motorista:</label><br>
+                <input type="text" id="nome_uber" name="nome_uber"><br><br>
+
+                <label for="placa">Placa do Veículo:</label><br>
+                <input type="text" id="placa" name="placa"><br><br>
+
+                <label for="endereco_uber">Endereço de Destino:</label><br>
+                <input type="text" id="endereco_uber" name="endereco_uber"><br><br>
+
+                <label for="solicitante_uber">Nome de Quem Pediu:</label><br>
+                <input type="text" id="solicitante_uber" name="solicitante_uber"><br><br>
+            </div>
+
+            <div id="campos-entregador" style="display:none;">
+                <label for="nome_entregador">Nome do Entregador (opcional):</label><br>
+                <input type="text" id="nome_entregador" name="nome_entregador"><br><br>
+
+                <label for="empresa_entregador">Empresa/Estabelecimento:</label><br>
+                <input type="text" id="empresa_entregador" name="empresa_entregador"><br><br>
+
+                <label for="endereco_entregador">Endereço de Destino:</label><br>
+                <input type="text" id="endereco_entregador" name="endereco_entregador"><br><br>
+
+                <label for="solicitante_entregador">Nome de Quem Pediu:</label><br>
+                <input type="text" id="solicitante_entregador" name="solicitante_entregador"><br><br>
+            </div>
+
+            <button type="submit">Enviar Solicitação</button>
+        </form>
+
+        <br>
+        <a href="/logout">Sair</a>
+    </div>
+</body>
+</html>
