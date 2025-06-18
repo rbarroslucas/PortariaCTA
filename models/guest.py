@@ -1,6 +1,7 @@
 from sqlalchemy import Column, String, Boolean
 from .access_base import AccessBase
 from typing import Optional
+from fastapi import HTTPException
 
 class Guest(AccessBase):
     __tablename__ = "guests"
@@ -46,7 +47,7 @@ class GuestBuilder:
 
     def build(self) -> Guest:
         if None in [self._address, self._user, self._dweller_id, self._name]:
-            raise ValueError("Campos obrigatórios não preenchidos para convidado.")
+            raise HTTPException(status_code=400, detail='Campos obrigatórios não preenchidos para convidado.')
         
         assert self._address is not None
         assert self._user is not None
@@ -60,3 +61,4 @@ class GuestBuilder:
             name=self._name,
             is_driving=self._is_driving
         )
+    

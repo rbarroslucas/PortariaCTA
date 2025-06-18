@@ -48,7 +48,7 @@ class UberBuilder:
 
     def build(self) -> Uber:
         if None in [self._address, self._user, self._dweller_id, self._name, self._license_plate]:
-            raise ValueError("Campos obrigatórios não preenchidos para transporte.")
+            raise HTTPException(status_code=400, detail='Campos obrigatórios não preenchidos para transporte.')
         validator = Validator(PlateValidation())
 
         assert self._address is not None
@@ -67,3 +67,5 @@ class UberBuilder:
             name = self._name,
             license_plate=self._license_plate
         )
+    
+
