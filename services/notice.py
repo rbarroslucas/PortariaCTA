@@ -62,21 +62,21 @@ class MailNotice():
 
     def data_to_message(self, data, access_type):
         if access_type == "uber":
-            message = "Liberação de transporte." + ". " + "Nome do motorista: " + data[access_type]["name"] + \
-                      ". Placa do carro: " + data[access_type]["license_plate"] + ". Endereço de destino: " + \
-                      data[access_type]["address"] + "."
+            message = "Liberação de transporte\n" + "Quem liberou: " + data[access_type]["user"] + "\nNome do motorista: " + data[access_type]["name"] + \
+                      "\nPlaca do carro: " + data[access_type]["license_plate"] + "\nEndereço de destino: " + \
+                      data[access_type]["address"]
         elif access_type == "delivery":
-            message = "Liberação de entrega de comida." + ". " + "Nome do entregador: " + data[access_type]["name"] + \
-                      ". Nome do estabelecimento: " + data[access_type]["establishment"] + ". Endereço de entrega: " + \
-                      data[access_type]["address"] + "."
+            message = "Liberação de entrega de comida\n" + "Quem liberou: " + data[access_type]["user"] + "\nNome do entregador: " + data[access_type]["name"] + \
+                      "\nNome do estabelecimento: " + data[access_type]["establishment"] + "\nEndereço de entrega: " + \
+                      data[access_type]["address"]
         elif access_type == "guest":
             if data[access_type]["is_driving"]:
                 key = "Sim"
             else:
-                key = "Não"
-            message = "Liberação de visita." + ". " + "Nome do visitante: " + data[access_type]["name"] + \
-                        ". Possui carro: " + key + ". Endereço de visita: " + \
-                        data[access_type]["address"] + "."
+                key = "Não" 
+            message = "Liberação de visita\n" + "Quem liberou: " + data[access_type]["user"] + "\nNome do visitante: " + data[access_type]["name"] + \
+                        "\nPossui carro: " + key + "\nEndereço de visita: " + \
+                        data[access_type]["address"]
         else:
             message = "Tipo de liberação inválida. Consultar administradores."
 

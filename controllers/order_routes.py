@@ -16,6 +16,7 @@ router = InferringRouter(
     tags=["order"],
     dependencies=[Depends(verify_token)]
 )
+
 @cbv(router)
 class OrderView:
     session: Session = Depends(get_session)
@@ -33,7 +34,7 @@ class OrderView:
             access_object = AccessFactory.create_access(schema, self.dweller.id)
             self.session.add(access_object)
             self.session.commit()
-
+            self.session.refresh(access_object)
         except ValueError as e:
             self.session.rollback()
             raise HTTPException(status_code=400, detail=str(e))
@@ -42,8 +43,10 @@ class OrderView:
             raise HTTPException(status_code=500, detail="Erro ao processar solicitação")
 
         response = {
+            "id": access_object.id,
             "message": f"Acesso liberado para {schema.access_type} {schema.name or ''}",
             schema.access_type: {
+                "user": access_object.user,
                 "name": schema.name,
                 "address": schema.address,
                 **({"license_plate": schema.license_plate} if schema.access_type == "uber" else {}),

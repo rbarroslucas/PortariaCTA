@@ -29,9 +29,7 @@ async function login() {
 
     if (res.ok) {
         localStorage.setItem("token", data.access_token);
-        document.getElementById("login").classList.add("hidden");
-        document.getElementById("solicitacao").classList.remove("hidden");
-        alert("Login realizado com sucesso!");
+        window.location.href = "home.html";
     } else {
         alert("Erro no login: " + (data.detail || "Verifique CPF e senha"));
     }
@@ -41,6 +39,7 @@ async function enviarSolicitacao() {
     const token = localStorage.getItem("token");
     if (!token) {
         alert("Faça login novamente.");
+        window.location.href = "index.html";
         return;
     }
 
@@ -66,7 +65,7 @@ async function enviarSolicitacao() {
     const data = await res.json();
 
     if (res.ok) {
-        alert("Solicitação enviada com sucesso!");
+        window.location.href = "sucesso.html";
     } else {
         alert("Erro: " + (data.detail || "Erro desconhecido"));
     }
@@ -74,17 +73,20 @@ async function enviarSolicitacao() {
 
 function logout() {
     localStorage.removeItem("token");
-    location.reload();
+    window.location.href = "index.html";
 }
 
 function checarLogin() {
     const token = localStorage.getItem("token");
+    const loginContainer = document.getElementById("login");
+    const solicitacaoContainer = document.getElementById("solicitacao");
+
     if (token) {
-        document.getElementById("login").classList.add("hidden");
-        document.getElementById("solicitacao").classList.remove("hidden");
+        if (loginContainer) loginContainer.classList.add("hidden");
+        if (solicitacaoContainer) solicitacaoContainer.classList.remove("hidden");
     } else {
-        document.getElementById("login").classList.remove("hidden");
-        document.getElementById("solicitacao").classList.add("hidden");
+        if (loginContainer) loginContainer.classList.remove("hidden");
+        if (solicitacaoContainer) solicitacaoContainer.classList.add("hidden");
     }
 }
 
