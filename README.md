@@ -79,7 +79,7 @@ cd front
 python -m http.server 5500
 ```
 
-Open your browser at: [http://localhost:5500/index.html](http://localhost:5500/index.html)
+Open your browser at: [http://127.0.0.1:5500/front/home.html](http://127.0.0.1:5500/front/home.html)
 
 **Option 2:** Using VSCode Live Server
 
