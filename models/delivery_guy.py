@@ -23,11 +23,11 @@ class DeliveryGuyBuilder:
         self._name: Optional[str] = None
         self._establishment: Optional[str] = None
 
-    def with_address(self, address: str) -> 'DeliveryGuyBuilder':
+    def with_address(self, address: Optional[str] = None) -> 'DeliveryGuyBuilder':
         self._address = address
         return self
 
-    def with_user(self, user: str) -> 'DeliveryGuyBuilder':
+    def with_user(self, user: Optional[str] = None) -> 'DeliveryGuyBuilder':
         self._user = user
         return self
 
@@ -35,17 +35,17 @@ class DeliveryGuyBuilder:
         self._dweller_id = dweller_id
         return self
 
-    def with_name(self, name: str) -> 'DeliveryGuyBuilder':
+    def with_name(self, name: Optional[str] = None) -> 'DeliveryGuyBuilder':
         self._name = name
         return self
     
-    def with_establishment(self, establishment: str) -> 'DeliveryGuyBuilder':
+    def with_establishment(self, establishment: Optional[str] = None) -> 'DeliveryGuyBuilder':
         self._establishment = establishment
         return self
     
     
     def build(self) -> DeliveryGuy:
-        if None in [self._address, self._user, self._dweller_id, self._establishment]:
+        if None in [self._address, self._user, self._dweller_id, self._establishment] or "" in [self._address, self._user, self._establishment]:
             raise ValueError("Campos obrigatórios não preenchidos para delivery.")
         
         assert self._address is not None

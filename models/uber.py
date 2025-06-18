@@ -1,6 +1,8 @@
 from sqlalchemy import Column, String
 from .access_base import AccessBase
 from typing import Optional
+from utils import PlateValidation, Validator
+from fastapi import HTTPException
 
 class Uber(AccessBase):
     __tablename__ = "ubers"
@@ -24,11 +26,11 @@ class UberBuilder:
         self._name: Optional[str] = None
         self._license_plate: Optional[str] = None
 
-    def with_address(self, address: str) -> 'UberBuilder':
+    def with_address(self, address: Optional[str] = None) -> 'UberBuilder':
         self._address = address
         return self
 
-    def with_user(self, user: str) -> 'UberBuilder':
+    def with_user(self, user: Optional[str] = None) -> 'UberBuilder':
         self._user = user
         return self
 
@@ -36,23 +38,27 @@ class UberBuilder:
         self._dweller_id = dweller_id
         return self
 
-    def with_name(self, name: str) -> 'UberBuilder':
+    def with_name(self, name: Optional[str] = None) -> 'UberBuilder':
         self._name = name
         return self
 
-    def with_license_plate(self, license_plate: str) -> 'UberBuilder':
+    def with_license_plate(self, license_plate: Optional[str] = None) -> 'UberBuilder':
         self._license_plate = license_plate
         return self
 
     def build(self) -> Uber:
-        if None in [self._address, self._user, self._dweller_id, self._name, self._license_plate]:
-            raise ValueError("Campos obrigatórios não preenchidos para transporte.")
-        
+        if None in [self._address, self._user, self._dweller_id, self._name, self._license_plate] or "" in [self._address, self._user, self._name, self._license_plate]:
+            raise HTTPException(status_code=400, detail='Campos obrigatórios não preenchidos para transporte.')
+        validator = Validator(PlateValidation())
+
         assert self._address is not None
         assert self._user is not None
         assert self._dweller_id is not None
         assert self._name is not None
         assert self._license_plate is not None
+
+        if not validator.perform_validation(self._license_plate):
+            raise HTTPException(status_code=400, detail="Placa inválida")
 
         return Uber(
             address=self._address,
@@ -61,3 +67,5 @@ class UberBuilder:
             name = self._name,
             license_plate=self._license_plate
         )
+    
+

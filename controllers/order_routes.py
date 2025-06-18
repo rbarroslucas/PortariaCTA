@@ -25,11 +25,6 @@ class OrderView:
 
     @router.post("/request-access")
     async def request_access(self, schema: AccessRequestSchema):
-        validator = Validator(PlateValidation())
-
-        if schema.access_type == "uber" and not validator.perform_validation(schema.license_plate):
-            raise HTTPException(status_code=400, detail="Placa inválida")
-
         try:
             access_object = AccessFactory.create_access(schema, self.dweller.id)
             self.session.add(access_object)

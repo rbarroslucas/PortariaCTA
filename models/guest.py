@@ -1,6 +1,7 @@
 from sqlalchemy import Column, String, Boolean
 from .access_base import AccessBase
 from typing import Optional
+from fastapi import HTTPException
 
 class Guest(AccessBase):
     __tablename__ = "guests"
@@ -24,11 +25,11 @@ class GuestBuilder:
         self._name: Optional[str] = None
         self._is_driving: Optional[bool] = None
 
-    def with_address(self, address: str) -> 'GuestBuilder':
+    def with_address(self, address: Optional[str] = None) -> 'GuestBuilder':
         self._address = address
         return self
 
-    def with_user(self, user: str) -> 'GuestBuilder':
+    def with_user(self, user: Optional[str] = None) -> 'GuestBuilder':
         self._user = user
         return self
 
@@ -36,17 +37,17 @@ class GuestBuilder:
         self._dweller_id = dweller_id
         return self
 
-    def with_name(self, name: str) -> 'GuestBuilder':
+    def with_name(self, name: Optional[str] = None) -> 'GuestBuilder':
         self._name = name
         return self
 
-    def with_is_driving(self, is_driving: bool) -> 'GuestBuilder':
+    def with_is_driving(self, is_driving: Optional[bool] = None) -> 'GuestBuilder':
         self._is_driving = is_driving
         return self
 
     def build(self) -> Guest:
-        if None in [self._address, self._user, self._dweller_id, self._name]:
-            raise ValueError("Campos obrigatórios não preenchidos para convidado.")
+        if None in [self._address, self._user, self._dweller_id, self._name] or "" in [self._address, self._user, self._name]:
+            raise HTTPException(status_code=400, detail='Campos obrigatórios não preenchidos para convidado.')
         
         assert self._address is not None
         assert self._user is not None
@@ -60,3 +61,4 @@ class GuestBuilder:
             name=self._name,
             is_driving=self._is_driving
         )
+    
