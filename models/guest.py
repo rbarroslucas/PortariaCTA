@@ -46,7 +46,7 @@ class GuestBuilder:
         return self
 
     def build(self) -> Guest:
-        if None in [self._address, self._user, self._dweller_id, self._name]:
+        if None in [self._address, self._user, self._dweller_id, self._name] or "" in [self._address, self._user, self._name]:
             raise HTTPException(status_code=400, detail='Campos obrigatórios não preenchidos para convidado.')
         
         assert self._address is not None

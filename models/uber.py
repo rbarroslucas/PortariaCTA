@@ -47,7 +47,7 @@ class UberBuilder:
         return self
 
     def build(self) -> Uber:
-        if None in [self._address, self._user, self._dweller_id, self._name, self._license_plate]:
+        if None in [self._address, self._user, self._dweller_id, self._name, self._license_plate] or "" in [self._address, self._user, self._name, self._license_plate]:
             raise HTTPException(status_code=400, detail='Campos obrigatórios não preenchidos para transporte.')
         validator = Validator(PlateValidation())
 

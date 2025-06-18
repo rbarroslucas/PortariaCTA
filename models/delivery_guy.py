@@ -45,7 +45,7 @@ class DeliveryGuyBuilder:
     
     
     def build(self) -> DeliveryGuy:
-        if None in [self._address, self._user, self._dweller_id, self._establishment]:
+        if None in [self._address, self._user, self._dweller_id, self._establishment] or "" in [self._address, self._user, self._establishment]:
             raise ValueError("Campos obrigatórios não preenchidos para delivery.")
         
         assert self._address is not None
