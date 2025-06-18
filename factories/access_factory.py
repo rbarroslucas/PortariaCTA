@@ -32,4 +32,4 @@ class AccessFactory:
             return builder.build()
 
         else:
-            raise ValueError(f"Tipo de acesso inexistente: {access_type}")
+            raise ValueError(f"Tipo de acesso inexistente: {schema.access_type}")

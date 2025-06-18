@@ -26,7 +26,7 @@ config.set_main_option("sqlalchemy.url", DATABASE_URL)
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-from models import Dweller, Uber, DeliveryGuy
+from models import Dweller, Uber, DeliveryGuy, Guest, AccessBase
 from config.database import Base
 
 # add your model's MetaData object here
