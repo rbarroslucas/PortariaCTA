@@ -42,3 +42,4 @@ def authenticate_user(username: str, password: str, session: Session):
     elif not bcrypt_context.verify(password, user.password):
         return False
     return user
+

@@ -14,6 +14,19 @@ class OrderView:
     session: Session = Depends(get_session)
     dweller: Dweller = Depends(verify_token)
 
+    @router.post("/get-admin")
+    async def get_admin(self):
+        admins = self.session.query(Dweller).filter(Dweller.admin == True)
+        dic = {}
+        for admin in admins:
+            dic.update({"admin_{}".format(admin.id): {
+                "name": admin.name,
+                "email": admin.email,
+                "cpf": admin.cpf,
+                "id": admin.id
+            }})
+        return dic
+
     @router.post("/request-uber-access")
     async def request_uber_access(self, uber_schema: UberSchema):
         new_uber = Uber(
