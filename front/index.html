@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Solicitação de Entrada</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <div class="container" id="login">
+        <h1>Login</h1>
+        <input type="text" id="cpf" placeholder="CPF">
+        <input type="password" id="password" placeholder="Senha">
+        <button onclick="login()">Login</button>
+    </div>
+
+    <div class="container hidden" id="solicitacao">
+        <h1>Solicitação de Entrada</h1>
+
+        <label>Tipo:</label>
+        <select id="tipo" onchange="atualizarFormulario()">
+            <option value="">-- Selecione --</option>
+            <option value="uber">Uber</option>
+            <option value="delivery">Entrega</option>
+            <option value="guest">Visitante</option>
+        </select>
+
+        <input type="text" id="nome" placeholder="Nome">
+        <input type="text" id="endereco" placeholder="Endereço">
+        <input type="text" id="solicitante" placeholder="Quem solicitou">
+
+        <div id="campos-uber" class="hidden">
+            <input type="text" id="placa" placeholder="Placa">
+        </div>
+
+        <div id="campos-entregador" class="hidden">
+            <input type="text" id="empresa" placeholder="Empresa">
+        </div>
+
+        <div id="campos-visitante" class="hidden">
+            <label><input type="checkbox" id="is_driving"> Está de carro?</label>
+        </div>
+
+        <button onclick="enviarSolicitacao()">Enviar Solicitação</button>
+        <button onclick="logout()">Sair</button>
+    </div>
+
+    <script src="js/main.js"></script>
+</body>
+</html>

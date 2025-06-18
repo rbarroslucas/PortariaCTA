@@ -60,26 +60,30 @@ class MailNotice():
             admin = mails_dict[key]
             self.adminsMail.append(admin['email'])
 
-    def data_to_message(self, data, type):
-        if type == "uber":
-            message = "Liberação de transporte." + ". " + "Nome do motorista: " + data[type]["name"] + \
-                      ". Placa do carro: " + data[type]["license_plate"] + ". Endereço de destino: " + \
-                      data[type]["address"] + "."
-        elif type == "delivery":
-            message = "Liberação de entrega de comida." + ". " + "Nome do entregador: " + data[type]["name"] + \
-                      ". Nome do estabelecimento: " + data[type]["establishment"] + ". Endereço de entrega: " + \
-                      data[type]["address"] + "."
-        elif type == "guest":
-            message = "Liberação de visita." + ". " + "Nome do visitante: " + data[type]["name"] + \
-                      ". Possui carro: " + data[type]["establishment"] + ". Endereço de visita: " + \
-                      data[type]["address"] + "."
+    def data_to_message(self, data, access_type):
+        if access_type == "uber":
+            message = "Liberação de transporte." + ". " + "Nome do motorista: " + data[access_type]["name"] + \
+                      ". Placa do carro: " + data[access_type]["license_plate"] + ". Endereço de destino: " + \
+                      data[access_type]["address"] + "."
+        elif access_type == "delivery":
+            message = "Liberação de entrega de comida." + ". " + "Nome do entregador: " + data[access_type]["name"] + \
+                      ". Nome do estabelecimento: " + data[access_type]["establishment"] + ". Endereço de entrega: " + \
+                      data[access_type]["address"] + "."
+        elif access_type == "guest":
+            if data[access_type]["is_driving"]:
+                key = "Sim"
+            else:
+                key = "Não"
+            message = "Liberação de visita." + ". " + "Nome do visitante: " + data[access_type]["name"] + \
+                        ". Possui carro: " + key + ". Endereço de visita: " + \
+                        data[access_type]["address"] + "."
         else:
             message = "Tipo de liberação inválida. Consultar administradores."
 
         return message
 
-    def send_notices(self, data, type):
-        message_text = self.data_to_message(data, type)
+    def send_notices(self, data, access_type):
+        message_text = self.data_to_message(data, access_type)
         for admin_mail in self.adminsMail:
             message = create_message("portariadcta@gmail.com", admin_mail, "Nova Liberação", message_text)
             send_message(self.service, "me", message)
