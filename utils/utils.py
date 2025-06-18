@@ -1,6 +1,6 @@
+import re
 
 class ValidationStrategy:
-    @abstract
     def validate(self, data: str) -> bool:
         pass
 
@@ -17,7 +17,7 @@ class Validator:
 
 
 class CpfValidation(ValidationStrategy):
-    def validate(slef, cpf: str) -> bool:
+    def validate(self, cpf: str) -> bool:
         cpf = ''.join(filter(str.isdigit, cpf))
 
         if len(cpf) != 11 or cpf == cpf[0] * 11 or cpf == "12345678909":
