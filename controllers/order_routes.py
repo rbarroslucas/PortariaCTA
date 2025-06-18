@@ -16,7 +16,6 @@ router = InferringRouter(
     tags=["order"],
     dependencies=[Depends(verify_token)]
 )
-
 @cbv(router)
 class OrderView:
     session: Session = Depends(get_session)
@@ -27,82 +26,33 @@ class OrderView:
     async def request_access(self, schema: AccessRequestSchema):
         validator = Validator(PlateValidation())
 
-        #Access Factory
-        #access_object = AccessFactory.create_access(schema, self.dweller.id)
-        #self.session.add(access_object)
-
-        response = {}
-
-        if schema.access_type == "uber":
-            if not validator.perform_validation(schema.license_plate):
-                raise HTTPException(status_code=400, detail="Placa inválida")
-
-            new_transport = Uber(
-                name=schema.name,
-                license_plate=schema.license_plate,
-                address=schema.address,
-                user=schema.user,
-                dweller_id=self.dweller.id
-            )
-            self.session.add(new_transport)
-
-            response = {
-                "message": f"Acesso liberado para transporte {new_transport.name}",
-                "uber": {
-                    "name": new_transport.name,
-                    "license_plate": new_transport.license_plate,
-                    "address": new_transport.address
-                }
-            }
-
-        elif schema.access_type == "delivery":
-            new_delivery = DeliveryGuy(
-                name=schema.name,
-                establishment=schema.establishment,
-                address=schema.address,
-                user=schema.user,
-                dweller_id=self.dweller.id
-            )
-            self.session.add(new_delivery)
-
-            response = {
-                "message": f"Acesso liberado para entregador {new_delivery.name}",
-                "delivery": {
-                    "name": new_delivery.name,
-                    "establishment": new_delivery.establishment,
-                    "address": new_delivery.address
-                }
-            }
-
-        elif schema.access_type == "guest":
-            new_guest = Guest(
-                name=schema.name,
-                is_driving=schema.is_driving,
-                address=schema.address,
-                user=schema.user,
-                dweller_id=self.dweller.id
-            )
-            self.session.add(new_guest)
-
-            response = {
-                "message": f"Acesso liberado para visitante {new_guest.name}",
-                "guest": {
-                    "name": new_guest.name,
-                    "is_driving": new_guest.is_driving,
-                    "address": new_guest.address
-                }
-            }
-
-        else:
-            raise HTTPException(status_code=400, detail="Tipo de acesso inválido")
+        if schema.access_type == "uber" and not validator.perform_validation(schema.license_plate):
+            raise HTTPException(status_code=400, detail="Placa inválida")
 
         try:
+            access_object = AccessFactory.create_access(schema, self.dweller.id)
+            self.session.add(access_object)
             self.session.commit()
+
+        except ValueError as e:
+            self.session.rollback()
+            raise HTTPException(status_code=400, detail=str(e))
         except Exception as e:
             self.session.rollback()
             raise HTTPException(status_code=500, detail="Erro ao processar solicitação")
 
+        response = {
+            "message": f"Acesso liberado para {schema.access_type} {schema.name or ''}",
+            schema.access_type: {
+                "name": schema.name,
+                "address": schema.address,
+                **({"license_plate": schema.license_plate} if schema.access_type == "uber" else {}),
+                **({"establishment": schema.establishment} if schema.access_type == "delivery" else {}),
+                **({"is_driving": schema.is_driving} if schema.access_type == "guest" else {}),
+            }
+        }
+
         self.mailNotice.update_admins(self.session)
-        self.mailNotice.send_notices(response, "uber")
+        self.mailNotice.send_notices(response, schema.access_type)
 
         return response

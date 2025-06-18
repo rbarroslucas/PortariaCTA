@@ -21,9 +21,9 @@ def gmail_authenticate():
             creds.refresh(Request())
         else:
             flow = InstalledAppFlow.from_client_secrets_file(
-                '/services/credentials.json', SCOPES)
+                'services/credentials.json', SCOPES)
             creds = flow.run_local_server(port=0)
-        with open('/services/token.json', 'w') as token:
+        with open('services/token.json', 'w') as token:
             token.write(creds.to_json())
     return build('gmail', 'v1', credentials=creds)
 
@@ -62,11 +62,19 @@ class MailNotice():
 
     def data_to_message(self, data, type):
         if type == "uber":
-            message = "Liberação de Uber"
+            message = "Liberação de transporte." + ". " + "Nome do motorista: " + data[type]["name"] + \
+                      ". Placa do carro: " + data[type]["license_plate"] + ". Endereço de destino: " + \
+                      data[type]["address"] + "."
         elif type == "delivery":
-            message = "Liberação de Comida"
+            message = "Liberação de entrega de comida." + ". " + "Nome do entregador: " + data[type]["name"] + \
+                      ". Nome do estabelecimento: " + data[type]["establishment"] + ". Endereço de entrega: " + \
+                      data[type]["address"] + "."
+        elif type == "guest":
+            message = "Liberação de visita." + ". " + "Nome do visitante: " + data[type]["name"] + \
+                      ". Possui carro: " + data[type]["establishment"] + ". Endereço de visita: " + \
+                      data[type]["address"] + "."
         else:
-            message = "Foda-se"
+            message = "Tipo de liberação inválida. Consultar administradores."
 
         return message
 
@@ -75,4 +83,3 @@ class MailNotice():
         for admin_mail in self.adminsMail:
             message = create_message("portariadcta@gmail.com", admin_mail, "Nova Liberação", message_text)
             send_message(self.service, "me", message)
-

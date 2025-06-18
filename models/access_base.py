@@ -7,7 +7,7 @@ class AccessBase(Base):
 
     id = Column("id", Integer, primary_key=True, autoincrement=True)
     address = Column("address", String, nullable=False)
-    user = Column("name_user", String, nullable=False)
+    user = Column("user", String, nullable=False)
     dweller_id = Column("dweller", ForeignKey("dwellers.id"), nullable=False)
 
     def __init__(self, address: str, user: str, dweller_id: int):
