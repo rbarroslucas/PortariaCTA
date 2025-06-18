@@ -23,7 +23,7 @@ class AuthView:
     @router.post("/create_dweller")
     async def create_dweller(self, dweller_schema: DwellerSchema):
         dweller = self.session.query(Dweller).filter(Dweller.cpf == dweller_schema.cpf).first()
-        validator = Validator(CpfValidation)
+        validator = Validator(CpfValidation())
 
         if not validator.perform_validation(dweller_schema.cpf):
             raise HTTPException(status_code=400, detail="CPF inválido")

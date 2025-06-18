@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from fastapi_utils.cbv import cbv
 from fastapi_utils.inferring_router import InferringRouter
 
-from config.dependencies import verify_token, get_session
+from config.dependencies import verify_token, get_session, get_admin
 from models import Dweller, Uber, DeliveryGuy
 from schemas import UberSchema, DeliverySchema
 from utils.utils import Validator, PlateValidation
@@ -15,22 +15,9 @@ class OrderView:
     session: Session = Depends(get_session)
     dweller: Dweller = Depends(verify_token)
 
-    @router.post("/get-admin")
-    async def get_admin(self):
-        admins = self.session.query(Dweller).filter(Dweller.admin == True)
-        dic = {}
-        for admin in admins:
-            dic.update({"admin_{}".format(admin.id): {
-                "name": admin.name,
-                "email": admin.email,
-                "cpf": admin.cpf,
-                "id": admin.id
-            }})
-        return dic
-
     @router.post("/request-uber-access")
     async def request_uber_access(self, uber_schema: UberSchema):
-        validator = Validator(PlateValidation)
+        validator = Validator(PlateValidation())
 
         new_uber = Uber(
             name=uber_schema.name,
@@ -42,9 +29,15 @@ class OrderView:
         
         if not validator.perform_validation(uber_schema.license_plate):
             raise HTTPException(status_code=400, detail="Placa inválido")
-
-        self.session.add(new_uber)
-        self.session.commit()
+        
+        try: 
+            self.session.add(new_uber)
+            self.session.commit()
+        except Exception as e:
+            self.session.rollback()
+            raise HTTPException(status_code=500, detail="Erro ao processar solicitação")
+        #admins = get_admin(self.session)
+        #print(admins)
         return {
             "message": f"Acesso liberado para Uber {new_uber.name}",
             "uber": {
@@ -63,8 +56,14 @@ class OrderView:
             user=delivery_schema.user,
             dweller_id=self.dweller.id
         )
-        self.session.add(new_delivery)
-        self.session.commit()
+        try:
+            self.session.add(new_delivery)
+            self.session.commit()
+        except Exception as e:
+            self.session.rollback()
+            raise HTTPException(status_code=500, detail="Erro ao processar solicitação")
+        #admins = get_admin(self.session)
+        #print(admins)
         return {
             "message": f"Acesso liberado para {new_delivery.name}",
             "delivery": {

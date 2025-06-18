@@ -16,6 +16,18 @@ def get_session():
     finally:
         session.close()
 
+def get_admin(session):
+    admins = session.query(Dweller).filter(Dweller.admin == True).all()
+    dic = {}
+    for admin in admins:
+        dic.update({"admin_{}".format(admin.id): {
+            "name": admin.name,
+            "email": admin.email,
+            "cpf": admin.cpf,
+            "id": admin.id
+        }})
+    return dic
+
 def verify_token(token: str = Depends(oauth2_schema), session: Session = Depends(get_session)):
     try:
         dic_info = jwt.decode(token, SECRET_KEY, ALG)
