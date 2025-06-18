@@ -6,6 +6,7 @@ from fastapi_utils.inferring_router import InferringRouter
 from config.dependencies import verify_token, get_session
 from models import Dweller, Uber, DeliveryGuy
 from schemas import UberSchema, DeliverySchema
+from utils.utils import Validator, PlateValidation
 
 router = InferringRouter(prefix="/order", tags=["order"], dependencies=[Depends(verify_token)])
 
@@ -16,6 +17,8 @@ class OrderView:
 
     @router.post("/request-uber-access")
     async def request_uber_access(self, uber_schema: UberSchema):
+        validator = Validator(PlateValidation)
+
         new_uber = Uber(
             name=uber_schema.name,
             license_plate=uber_schema.license_plate,
@@ -23,6 +26,10 @@ class OrderView:
             user=uber_schema.user,
             dweller_id=self.dweller.id
         )
+        
+        if not validator.perform_validation(uber_schema.license_plate):
+            raise HTTPException(status_code=400, detail="Placa inválido")
+
         self.session.add(new_uber)
         self.session.commit()
         return {

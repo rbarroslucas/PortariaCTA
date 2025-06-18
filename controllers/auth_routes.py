@@ -11,7 +11,7 @@ from config.dependencies import (
 )
 from services import bcrypt_context
 from schemas import DwellerSchema, LoginSchema
-from utils.utils import is_valid_cpf
+from utils.utils import Validator, CpfValidation
 
 
 router = InferringRouter(prefix="/auth", tags=["auth"])
@@ -23,8 +23,9 @@ class AuthView:
     @router.post("/create_dweller")
     async def create_dweller(self, dweller_schema: DwellerSchema):
         dweller = self.session.query(Dweller).filter(Dweller.cpf == dweller_schema.cpf).first()
+        validator = Validator(CpfValidation)
 
-        if not is_valid_cpf(dweller_schema.cpf):
+        if not validator.perform_validation(dweller_schema.cpf):
             raise HTTPException(status_code=400, detail="CPF inválido")
 
         if dweller:
