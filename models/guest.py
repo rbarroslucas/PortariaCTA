@@ -24,11 +24,11 @@ class GuestBuilder:
         self._name: Optional[str] = None
         self._is_driving: Optional[bool] = None
 
-    def with_address(self, address: str) -> 'GuestBuilder':
+    def with_address(self, address: Optional[str] = None) -> 'GuestBuilder':
         self._address = address
         return self
 
-    def with_user(self, user: str) -> 'GuestBuilder':
+    def with_user(self, user: Optional[str] = None) -> 'GuestBuilder':
         self._user = user
         return self
 
@@ -36,11 +36,11 @@ class GuestBuilder:
         self._dweller_id = dweller_id
         return self
 
-    def with_name(self, name: str) -> 'GuestBuilder':
+    def with_name(self, name: Optional[str] = None) -> 'GuestBuilder':
         self._name = name
         return self
 
-    def with_is_driving(self, is_driving: bool) -> 'GuestBuilder':
+    def with_is_driving(self, is_driving: Optional[bool] = None) -> 'GuestBuilder':
         self._is_driving = is_driving
         return self
 
