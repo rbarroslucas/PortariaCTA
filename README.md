@@ -29,13 +29,14 @@ source venv/bin/activate
 ```bash
 pip install -r requirements.txt
 ```
+3. Set your .env keys:
 
-#### 🔧 Database Configuration
-
-Edit `config/database.py` and set your database credentials:
-
-```python
-DATABASE_URL = "postgresql://user:password@localhost:5432/portaria"
+```bash
+SECRET_KEY= 
+ALG=HS256
+ACCESS_TOKEN_DURATION=30
+DATABASE_URL=
+API_URL=http://127.0.0.1:8000
 ```
 
 #### 🚀 Run Database Migrations (Optional)
@@ -56,12 +57,6 @@ Your API will be running at: [http://127.0.0.1:8000](http://127.0.0.1:8000)
 Interactive documentation: [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
 
 ---
-
-### 2️⃣ Frontend (HTML + CSS + JavaScript)
-
-#### ⚙️ Requirements
-
-* Any web browser (Chrome, Firefox, Edge, etc.)
 
 #### 🛠️ Installation Steps
 
@@ -85,16 +80,6 @@ Open your browser at: [http://127.0.0.1:5500/front/home.html](http://127.0.0.1:5
 
 * Install the VSCode extension **"Live Server"**.
 * Right-click `index.html` → **"Open with Live Server"**.
-
----
-
-## 🔗 API Main Endpoints
-
-| Endpoint                | Method | Description              |
-| ----------------------- | ------ | ------------------------ |
-| `/auth/login`           | POST   | Authenticate a user      |
-| `/auth/create_dweller`  | POST   | Create a new user        |
-| `/order/request-access` | POST   | Submit an access request |
 
 ---
 
@@ -128,9 +113,3 @@ app.add_middleware(
 * Success confirmation page
 * Admin notification (email or custom notifications)
 * User logout functionality
-
----
-
-## 🏆 Project by:
-
-* 🚀 Academic Project — **Portaria CTA - IFSP**
